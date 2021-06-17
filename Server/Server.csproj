@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Grpc.Tools" Version="2.38.0" PrivateAssets="All" />
+    <PackageReference Include="Google.Protobuf" Version="3.17.3" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.38.0" />
+
+    <Protobuf Include="../protos/file.proto" GrpcServices="server">
+        <Link>protos/file.proto</Link>
+    </Protobuf>
+  </ItemGroup>
+
+</Project>

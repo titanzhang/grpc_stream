@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package FileStream;
+option csharp_namespace = "FileStream";
+
+service FileService {
+    rpc Upload(stream UploadRequest) returns (UploadResponse);
+}
+
+message FileMeta {
+    string path = 1;
+}
+
+message UploadRequest {
+    oneof type {
+        FileMeta meta = 2;
+        bytes chunk = 1;
+    }
+}
+
+message UploadResponse {
+}
