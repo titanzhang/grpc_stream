@@ -12,6 +12,8 @@
     <Protobuf Include="../protos/file.proto" GrpcServices="server">
         <Link>protos/file.proto</Link>
     </Protobuf>
+    <PackageReference Include="MongoDB.Driver" Version="2.12.4" />
+    <PackageReference Include="MongoDB.Driver.GridFS" Version="2.12.4" />
   </ItemGroup>
 
 </Project>

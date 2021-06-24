@@ -6,12 +6,12 @@ using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using FileStream;
 
-namespace Server
+namespace Server.Service
 {
-    public class FileServiceImpl : FileService.FileServiceBase
+    public class SimpleFileServiceImpl : FileService.FileServiceBase
     {
-        private readonly ILogger<FileServiceImpl> _logger;
-        public FileServiceImpl(ILogger<FileServiceImpl> logger)
+        private readonly ILogger<SimpleFileServiceImpl> _logger;
+        public SimpleFileServiceImpl(ILogger<SimpleFileServiceImpl> logger)
         {
             _logger = logger;
         }
@@ -26,8 +26,8 @@ namespace Server
             {
                 if (request.TypeCase == UploadRequest.TypeOneofCase.Meta)
                 {
-                    fileName = request.Meta.Path;
-                    _logger.LogInformation($"Start uploading file {request.Meta.Path}");
+                    fileName = request.Meta.Key;
+                    _logger.LogInformation($"Start uploading file {fileName}");
                 } else if (request.TypeCase == UploadRequest.TypeOneofCase.Chunk)
                 {
                     _logger.LogInformation($"Receiving chunk {chunkId}: {request.Chunk.Length} bytes");
