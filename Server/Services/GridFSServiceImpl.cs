@@ -74,7 +74,7 @@ namespace Server.Service
         }
     }
 
-    class GridFSDriver
+    public class GridFSDriver
     {
         static GridFSBucket getBucket()
         {
@@ -111,7 +111,7 @@ namespace Server.Service
         }
     }
 
-    class GridFSOperation
+    public class GridFSOperation
     {
         IGridFSBucket _bucket;
         public IGridFSBucket Bucket

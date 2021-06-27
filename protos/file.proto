@@ -13,12 +13,14 @@ message FileMeta {
 
 message UploadRequest {
     oneof type {
-        FileMeta meta = 2;
         bytes chunk = 1;
+        FileMeta meta = 2;
     }
 }
 
 message UploadResponse {
-    string errorMsg = 1;
-    string fileId = 2;
+    oneof result {
+        string fileId = 1;
+        string errorMsg = 2;
+    }
 }

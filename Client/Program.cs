@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.IO;
-using Grpc.Net.Client;
 using FileStream;
-using Google.Protobuf;
-using Grpc.Core;
+using Client.Service;
 
 namespace Client
 {
@@ -27,14 +25,23 @@ namespace Client
             var key = args[1];
 
             // Create gRPC connection and client
-            using var channel = GrpcChannel.ForAddress("http://localhost:5000");
-            var client = new FileService.FileServiceClient(channel);
+            var fs = GrpcFileOperation.ForAddress("http://localhost:5000");
 
             // Call the service via stream
-            await UploadFile(client, filePath, key, 2 * 1024 * 1024);
+            try
+            {
+                await UploadFile(fs, filePath, key, 2 * 1024 * 1024);
+            } catch(Exception e)
+            {
+                Console.WriteLine(e);
+            } finally
+            {
+                // Cleanup
+                await fs.Close();
+            }
         }
 
-        static async Task UploadFile(FileService.FileServiceClient client, string path, string key, int chunkSize = 512)
+        static async Task UploadFile(GrpcFileOperation fs, string path, string key, int chunkSize = 512)
         {
             var fullPath = Path.GetFullPath(path);
             if (!File.Exists(fullPath))
@@ -45,14 +52,10 @@ namespace Client
 
             // Open the file for read
             using System.IO.FileStream inputStream = File.OpenRead(fullPath);
-            var metadata = new FileMeta { Key = key };
             byte[] buffer = new byte[chunkSize];
 
-            // Open the rpc stream
-            var grpcStream = new RPCUploadStream(client);
-
             // 1st request to send file metadata
-            await grpcStream.Begin(metadata);
+            var grpcStream = await fs.BeginUpload(key);
 
             // rest requests to send file chunks
             while (true)
@@ -67,44 +70,9 @@ namespace Client
             }
 
             // Done
-            var response = await grpcStream.End();
+            var fileId = await fs.EndUpload();
 
-            Console.WriteLine($"Response: {response.ToString()}");
-        }
-    }
-
-    class RPCUploadStream
-    {
-        private FileService.FileServiceClient _client;
-        private AsyncClientStreamingCall<UploadRequest, UploadResponse> _rpcCall;
-
-        public RPCUploadStream(FileService.FileServiceClient client)
-        {
-            _client = client;
-        }
-
-        public async Task Begin(FileMeta metadata)
-        {
-            _rpcCall = _client.Upload();
-            await _rpcCall.RequestStream.WriteAsync(new UploadRequest
-            {
-                Meta = metadata
-            });
-        }
-
-        public async Task Write(byte[] bytes, int size)
-        {
-            var chunk = ByteString.CopyFrom(bytes, 0, size);
-            await _rpcCall.RequestStream.WriteAsync(new UploadRequest
-            {
-                Chunk = chunk
-            });
-        }
-
-        public async Task<UploadResponse> End()
-        {
-            await _rpcCall.RequestStream.CompleteAsync();
-            return await _rpcCall;
+            Console.WriteLine($"Response: {fileId}");
         }
     }
 }
