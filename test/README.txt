@@ -6,17 +6,22 @@ GridFS
 
 Performance Test
 * Writing speed of GridFS + gRPC vs. Samba
+  - Generate content on-the-fly
+  - 100MB file
+  - Stream to FS through 128KB buffer
+  - No concurrent writing
 * Specs
   - 8 CPU cores, 64GB RAM, SSD
   - Windows10 64bit
   - Local systems(gRPC server, MongoDB, Samba shared folder)
-* Results
+* Result
   - gRPC + GridFS: 25 MB/s
   - Samba: 2127 MB/s
   - GridFS: 27 MB/s
   - Local FS: 2923 MB/s
 * Why
-  - Docker/WSL?
+  - Not Docker issue - Verifed with native installation
+  - C# driver issue?
   - MongoDB configuration?
 
 
