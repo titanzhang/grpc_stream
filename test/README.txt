@@ -1,8 +1,8 @@
 GridFS
 * 16MB limit of MongoDB document
 * Split file into small chunks, and store chunks in multiple documents
-* Documents: File chunks, File metadata
-* MongoDB driver functionality
+* Collections: files, chunks
+* Abstraction layer implemented in MongoDB driver
 
 Performance Test
 * Writing speed of GridFS + gRPC vs. Samba
